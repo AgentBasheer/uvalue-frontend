@@ -201,6 +201,13 @@ function filterTestimonials(category) {
     testimonialCards.forEach((card, index) => {
         const cardCategory = card.getAttribute('data-category');
         const isFeatured = card.classList.contains('featured');
+        const isHidden = card.classList.contains('hidden');
+        
+        // Skip cards that are still hidden (not loaded yet)
+        if (isHidden && category === 'all') {
+            card.style.display = 'none';
+            return;
+        }
         
         if ((category === 'all' || cardCategory === category) && (!isFeatured || isFeaturedVisible)) {
             // Show card with animation
@@ -313,47 +320,45 @@ function initLoadMore() {
     
     if (loadMoreBtn) {
         loadMoreBtn.addEventListener('click', () => {
-            // Simulate loading more testimonials
+            // Show loading state
             loadMoreBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Loading...';
             loadMoreBtn.disabled = true;
             
-            setTimeout(() => {
-                // Show all hidden testimonials at once
-                const hiddenCards = document.querySelectorAll('.testimonial-card.hidden');
-                
-                hiddenCards.forEach((card, index) => {
-                    setTimeout(() => {
-                        card.classList.remove('hidden');
-                        const isFeatured = card.classList.contains('featured');
-                        
-                        // Only show if it's not featured or if it matches current filter
-                        if (!isFeatured || (currentFilter === 'all' || card.getAttribute('data-category') === currentFilter)) {
-                            if (isFeatured) {
-                                card.style.display = 'grid';
-                                card.style.gridColumn = 'span 2';
-                            } else {
-                                card.style.display = 'flex'; // Use flex for regular cards
-                                card.style.flexDirection = 'column';
-                                // Reset any grid properties
-                                card.style.gridColumn = '';
-                                card.style.gridRow = '';
-                            }
-                            card.style.opacity = '0';
-                            card.style.transform = 'translateY(30px)';
-                            
-                            setTimeout(() => {
-                                card.style.opacity = '1';
-                                card.style.transform = 'translateY(0)';
-                            }, 50);
-                        }
-                    }, index * 100);
-                });
-                
-                // Hide the button permanently after use
+            // Show all hidden testimonials at once
+            const hiddenCards = document.querySelectorAll('.testimonial-card.hidden');
+            
+            hiddenCards.forEach((card, index) => {
                 setTimeout(() => {
-                    loadMoreBtn.style.display = 'none';
-                }, hiddenCards.length * 100 + 500);
-            }, 1000);
+                    card.classList.remove('hidden');
+                    const isFeatured = card.classList.contains('featured');
+                    
+                    // Only show if it's not featured or if it matches current filter
+                    if (!isFeatured || (currentFilter === 'all' || card.getAttribute('data-category') === currentFilter)) {
+                        if (isFeatured) {
+                            card.style.display = 'grid';
+                            card.style.gridColumn = 'span 2';
+                        } else {
+                            card.style.display = 'flex'; // Use flex for regular cards
+                            card.style.flexDirection = 'column';
+                            // Reset any grid properties
+                            card.style.gridColumn = '';
+                            card.style.gridRow = '';
+                        }
+                        card.style.opacity = '0';
+                        card.style.transform = 'translateY(30px)';
+                        
+                        setTimeout(() => {
+                            card.style.opacity = '1';
+                            card.style.transform = 'translateY(0)';
+                        }, 50);
+                    }
+                }, index * 100);
+            });
+            
+            // Hide the button permanently after showing all testimonials
+            setTimeout(() => {
+                loadMoreBtn.style.display = 'none';
+            }, hiddenCards.length * 100 + 500);
         });
     }
 }
@@ -419,6 +424,7 @@ function initHiddenTestimonials() {
     // Show only featured + 2 more testimonials initially
     const allCards = document.querySelectorAll('.testimonial-card');
     const featuredCard = document.querySelector('.testimonial-card.featured');
+    let visibleCount = 0;
     
     allCards.forEach((card, index) => {
         const isFeatured = card.classList.contains('featured');
@@ -427,23 +433,32 @@ function initHiddenTestimonials() {
         if (isFeatured) {
             card.style.display = 'grid';
             card.style.gridColumn = 'span 2';
+            visibleCount++;
         } else {
             card.style.display = 'flex';
             card.style.flexDirection = 'column';
             card.style.gridColumn = '';
             card.style.gridRow = '';
-        }
-        
-        if (card !== featuredCard && index >= 3) {
-            card.classList.add('hidden');
+            
+            // Show only 2 non-featured cards initially
+            if (visibleCount < 3) { // 1 featured + 2 regular = 3 total
+                visibleCount++;
+            } else {
+                card.classList.add('hidden');
+                card.style.display = 'none'; // Hide completely initially
+            }
         }
     });
     
-    // Update load more button with initial count
+    // Initialize load more button
     const hiddenCount = document.querySelectorAll('.testimonial-card.hidden').length;
     const loadMoreBtn = document.querySelector('.load-more-btn');
     if (loadMoreBtn && hiddenCount > 0) {
-        loadMoreBtn.innerHTML = `<i class="fa-solid fa-plus"></i> Load More (${hiddenCount} remaining)`;
+        loadMoreBtn.innerHTML = '<i class="fa-solid fa-plus"></i> Load More Testimonials';
+        loadMoreBtn.style.display = 'inline-flex'; // Ensure button is visible
+    } else if (loadMoreBtn && hiddenCount === 0) {
+        // Hide button if there are no hidden testimonials
+        loadMoreBtn.style.display = 'none';
     }
 }
 
