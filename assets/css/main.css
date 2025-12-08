@@ -261,12 +261,20 @@ header {
 
 .hero-title { margin-bottom: 24px; color: white; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
 
-.hero-desc { 
+.hero-desc {
     font-size: 1.25rem;
     color: #cbd5e1;
-    margin-bottom: 45px; 
-    font-weight: 400; 
+    margin-bottom: 45px;
+    font-weight: 400;
     max-width: 90%;
+}
+
+/* Hero buttons container */
+.hero-content .btn-container {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
 }
 
 .stats-bar {
