@@ -247,35 +247,198 @@ header {
    ========================================= */
 .hero {
     min-height: 100vh;
-    /* DARKER GRADIENT OVERLAY for better text visibility */
-    background: linear-gradient(180deg, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0.8) 100%), 
+    /* Modern gradient overlay with more depth */
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.97) 0%, rgba(30, 41, 59, 0.85) 50%, rgba(15, 23, 42, 0.95) 100%),
                 url('https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2069&auto=format&fit=crop');
     background-size: cover; background-position: center;
-    display: flex; align-items: center;
+    background-attachment: fixed;
+    display: flex; align-items: center; justify-content: center;
     padding-top: var(--header-height);
     color: var(--text-white);
     position: relative;
+    overflow: hidden;
 }
 
-.hero-content { max-width: 780px; position: relative; z-index: 2; }
+/* Add animated background elements */
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+        radial-gradient(circle at 20% 50%, rgba(16, 185, 129, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(14, 165, 233, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 80%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
+    animation: heroGradientShift 15s ease infinite;
+    z-index: 1;
+}
 
-.hero-title { margin-bottom: 24px; color: white; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+@keyframes heroGradientShift {
+    0%, 100% { transform: translateX(0) translateY(0); }
+    33% { transform: translateX(-20px) translateY(-10px); }
+    66% { transform: translateX(20px) translateY(10px); }
+}
+
+.hero-content {
+    max-width: 900px;
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: 40px;
+}
+
+/* Enhanced hero title with better typography */
+.hero-title {
+    margin-bottom: 30px;
+    color: white;
+    text-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    position: relative;
+    display: inline-block;
+}
+
+/* Add underline animation to title */
+.hero-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 4px;
+    background: var(--grad-accent);
+    border-radius: 2px;
+    animation: titleUnderline 2s ease forwards;
+    animation-delay: 0.5s;
+}
+
+@keyframes titleUnderline {
+    to { width: 100px; }
+}
 
 .hero-desc {
-    font-size: 1.25rem;
-    color: #cbd5e1;
-    margin-bottom: 45px;
+    font-size: 1.35rem;
+    color: #e2e8f0;
+    margin-bottom: 50px;
     font-weight: 400;
-    max-width: 90%;
+    max-width: 85%;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.7;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.3);
 }
 
-/* Hero buttons container */
+/* Enhanced hero buttons container */
 .hero-content .btn-container {
     display: flex;
     justify-content: center;
-    gap: 16px;
+    gap: 20px;
     flex-wrap: wrap;
+    margin-top: 20px;
 }
+
+/* Add floating animation to buttons */
+.hero-content .btn-container .btn {
+    animation: btnFloat 3s ease-in-out infinite;
+    animation-delay: calc(var(--btn-index) * 0.2s);
+}
+
+.hero-content .btn-container .btn:nth-child(1) {
+    --btn-index: 0;
+}
+
+.hero-content .btn-container .btn:nth-child(2) {
+    --btn-index: 1;
+}
+
+@keyframes btnFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+
+/* Add subtle glow effect to primary button */
+.hero-content .btn-primary {
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-content .btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.hero-content .btn-primary:hover::before {
+    left: 100%;
+}
+
+/* Enhanced outline button */
+.hero-content .btn-outline {
+    backdrop-filter: blur(10px);
+    background: rgba(255,255,255,0.05);
+    border: 2px solid rgba(255,255,255,0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-content .btn-outline::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(16, 185, 129, 0.1);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+}
+
+.hero-content .btn-outline:hover::before {
+    transform: scaleX(1);
+}
+
+/* Hero badge */
+.hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(16, 185, 129, 0.15);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    padding: 8px 16px;
+    border-radius: var(--radius-pill);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #4ade80;
+    margin-bottom: 25px;
+    animation: badgePulse 2s ease-in-out infinite;
+}
+
+@keyframes badgePulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+    }
+}
+
+.hero-badge i {
+    font-size: 0.9rem;
+}
+
 
 .stats-bar {
     position: absolute; bottom: 40px; right: 0; left: 0;
@@ -1353,6 +1516,10 @@ footer { background: var(--primary); color: #94a3b8; padding: 100px 0 30px; }
     .float-btn-left { bottom: 20px; left: 20px; padding: 10px 20px; font-size: 0.85rem; }
     .float-btn-right { bottom: 20px; right: 20px; }
     .footer-grid { grid-template-columns: 1fr 1fr; }
+    
+    /* Hero responsive adjustments */
+    .hero-content { padding: 20px; }
+    .hero-badge { font-size: 0.8rem; }
 }
 @media (max-width: 480px) {
     .footer-grid { grid-template-columns: 1fr; }
@@ -1360,4 +1527,23 @@ footer { background: var(--primary); color: #94a3b8; padding: 100px 0 30px; }
     .services-grid { grid-template-columns: 1fr; gap: 15px; }
     .service-card { padding: 30px 20px; }
     .card-btn { padding: 6px 14px; font-size: 0.8rem; }
+    
+    /* Hero mobile responsive adjustments */
+    .hero-content { padding: 15px; }
+    .hero-title { font-size: 2.2rem; margin-bottom: 20px; }
+    .hero-desc { font-size: 1.1rem; margin-bottom: 30px; }
+    .hero-badge {
+        font-size: 0.75rem;
+        padding: 6px 12px;
+        margin-bottom: 20px;
+    }
+    .hero-content .btn-container {
+        flex-direction: column;
+        gap: 12px;
+        margin-top: 15px;
+    }
+    .hero-content .btn {
+        width: 100%;
+        justify-content: center;
+    }
 }
