@@ -19,7 +19,6 @@
     --bg-surface: #f1f5f9;    
     --text-main: #334155;     
     --text-light: #64748b;    
-    --text-white: #f8fafc;
     
     --container-width: 1200px;
     --header-height: 80px;
@@ -121,7 +120,7 @@ ul { list-style: none; }
 
 .btn-outline {
     background: transparent;
-    color: var(--text-white);
+    color: white;
     border: 2px solid rgba(255,255,255,0.3);
 }
 .btn-outline:hover {
@@ -149,7 +148,7 @@ header {
     font-family: 'Plus Jakarta Sans', sans-serif;
     font-size: 1.5rem;
     font-weight: 800;
-    color: var(--text-white);
+    color: white;
     letter-spacing: -0.02em;
     display: flex; align-items: center; gap: 10px;
     cursor: pointer;
@@ -254,7 +253,7 @@ header {
     background-attachment: fixed;
     display: flex; align-items: center; justify-content: center;
     padding-top: var(--header-height);
-    color: var(--text-white);
+    color: white;
     position: relative;
     overflow: hidden;
 }
@@ -344,15 +343,14 @@ header {
 /* Add floating animation to buttons */
 .hero-content .btn-container .btn {
     animation: btnFloat 3s ease-in-out infinite;
-    animation-delay: calc(var(--btn-index) * 0.2s);
 }
 
 .hero-content .btn-container .btn:nth-child(1) {
-    --btn-index: 0;
+    animation-delay: 0s;
 }
 
 .hero-content .btn-container .btn:nth-child(2) {
-    --btn-index: 1;
+    animation-delay: 0.2s;
 }
 
 @keyframes btnFloat {
@@ -440,26 +438,6 @@ header {
 }
 
 
-.stats-bar {
-    position: absolute; bottom: 40px; right: 0; left: 0;
-    width: fit-content; margin: 0 auto;
-    background: rgba(255,255,255,0.03); 
-    border: 1px solid rgba(255,255,255,0.08);
-    backdrop-filter: blur(12px);
-    padding: 20px 60px;
-    border-radius: var(--radius-pill);
-    display: flex; gap: 60px;
-    z-index: 2;
-}
-.stat-item { text-align: center; }
-.stat-num { 
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 1.8rem; font-weight: 800; color: white; display: block; line-height: 1;
-}
-.stat-label { 
-    font-size: 0.75rem; color: var(--accent); text-transform: uppercase; 
-    letter-spacing: 0.1em; font-weight: 700; margin-top: 5px;
-}
 
 /* Enhanced Testimonials Stats */
 .testimonials-stats-enhanced {
@@ -1138,22 +1116,12 @@ header {
 /* Responsive adjustments for testimonials grid */
 @media (max-width: 1024px) {
     .testimonials-grid {
-        grid-template-columns: 1fr; /* Single column on smaller screens */
+        grid-template-columns: 1fr;
     }
     
     .testimonial-card.featured:not([style*="display: none"]) {
         grid-column: span 1;
         grid-template-columns: 1fr;
-    }
-    
-    .testimonial-image {
-        min-height: 180px;
-        max-height: 220px;
-    }
-    
-    .testimonial-card.featured:not([style*="display: none"]) .testimonial-image {
-        min-height: 180px;
-        max-height: 220px;
     }
     
     .testimonials-stats-enhanced {
@@ -1312,52 +1280,9 @@ html {
     scroll-behavior: smooth;
 }
 
-/* Add loading animation for testimonials */
-.testimonial-card.loading {
-    opacity: 0;
-    transform: translateY(20px);
-    transition: all 0.6s ease;
-}
-
-.testimonial-card.loading.loaded {
-    opacity: 1;
-    transform: translateY(0);
-}
-
 /* Hidden testimonial cards */
 .testimonial-card.hidden {
     display: none;
-}
-
-/* Add focus styles for accessibility */
-.filter-btn:focus,
-.load-more-btn:focus {
-    outline: 3px solid var(--accent);
-    outline-offset: 2px;
-}
-
-.testimonial-card:focus-within {
-    box-shadow: 0 0 0 3px var(--accent);
-}
-
-/* Add print styles */
-@media print {
-    .testimonial-filters,
-    .testimonial-actions,
-    .testimonials-stats-enhanced {
-        display: none;
-    }
-    
-    .testimonials-grid {
-        grid-template-columns: 1fr;
-        gap: 20px;
-    }
-    
-    .testimonial-card {
-        break-inside: avoid;
-        box-shadow: none;
-        border: 1px solid #ccc;
-    }
 }
 
 
@@ -1382,28 +1307,6 @@ html {
 .float-btn-right.visible { opacity: 1; pointer-events: all; }
 .float-btn-right:hover { background: var(--primary); color: white; transform: translateY(-3px); }
 
-/* 5b. Book Appointment (Left) */
-.float-btn-left {
-    position: fixed; bottom: 30px; left: 30px;
-    background: var(--primary); color: white;
-    padding: 12px 24px;
-    border-radius: var(--radius-pill);
-    box-shadow: 0 8px 30px rgba(15, 23, 42, 0.3);
-    z-index: 995; cursor: pointer;
-    display: flex; align-items: center; gap: 12px;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-weight: 600;
-    font-size: 0.95rem;
-    transition: all 0.3s;
-    animation: pulse-border 2s infinite;
-}
-@keyframes pulse-border {
-    0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
-    70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
-}
-.float-btn-left:hover { transform: scale(1.05); background: var(--primary-light); }
-.float-btn-left i { color: var(--accent); }
 
 /* =========================================
    6. FOOTER
@@ -1480,40 +1383,12 @@ footer { background: var(--primary); color: #94a3b8; padding: 100px 0 30px; }
     outline: none; border-color: var(--accent); background: white;
 }
 
-/* Detail View Styles */
-.service-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 80px; padding: 100px 0; }
-.service-content img {
-    width: 100%; height: 500px; object-fit: cover;
-    border-radius: var(--radius-lg); margin-bottom: 50px;
-}
-.feature-list li {
-    padding: 20px 0; border-bottom: 1px solid #e2e8f0;
-    display: flex; gap: 18px; color: var(--text-main); font-weight: 500;
-}
-.feature-list li i { color: var(--accent); margin-top: 5px; }
-
-/* Sidebar Box */
-.sidebar-box {
-    background: var(--primary); color: white;
-    padding: 45px; border-radius: var(--radius-lg);
-    position: sticky; top: 120px; overflow: hidden;
-}
-
-/* Page Header */
-.page-header {
-    background: var(--primary); 
-    padding: 180px 0 100px; 
-    text-align: center;
-}
 
 /* Responsive */
 @media (max-width: 968px) {
     .nav-menu { display: none; }
     .split-section { grid-template-columns: 1fr; }
     .gallery-grid { grid-template-columns: 1fr 1fr; }
-    .testimonials-stats-integrated { flex-direction: column; gap: 25px; padding: 20px 0; }
-    .service-layout { grid-template-columns: 1fr; }
-    .float-btn-left { bottom: 20px; left: 20px; padding: 10px 20px; font-size: 0.85rem; }
     .float-btn-right { bottom: 20px; right: 20px; }
     .footer-grid { grid-template-columns: 1fr 1fr; }
     
@@ -1521,9 +1396,74 @@ footer { background: var(--primary); color: #94a3b8; padding: 100px 0 30px; }
     .hero-content { padding: 20px; }
     .hero-badge { font-size: 0.8rem; }
 }
+
+/* =========================================
+   8. SERVICE PAGES STYLES
+   ========================================= */
+.service-hero {
+    padding: 120px 0 80px;
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0.8) 100%);
+    color: white;
+    text-align: center;
+}
+
+.service-hero h1 {
+    color: white;
+    font-size: 3.5rem;
+    margin: 15px 0 25px;
+    line-height: 1.1;
+}
+
+.service-hero p {
+    color: #cbd5e1;
+    font-size: 1.2rem;
+    max-width: 700px;
+    margin: 0 auto 30px;
+}
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+}
+
+.feature-box {
+    background: var(--bg-surface);
+    padding: 40px 30px;
+    border-radius: var(--radius-lg);
+    text-align: center;
+    transition: all 0.3s ease;
+    border: 1px solid #e2e8f0;
+}
+
+.feature-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+.feature-icon {
+    font-size: 2rem;
+    color: var(--accent);
+    margin-bottom: 20px;
+}
+
+.feature-box h3 {
+    margin-bottom: 15px;
+    color: var(--primary);
+}
+
+.feature-box p {
+    color: var(--text-light);
+    line-height: 1.6;
+}
+
+.section-title {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    color: var(--primary);
+}
 @media (max-width: 480px) {
     .footer-grid { grid-template-columns: 1fr; }
-    .testimonials-stats-integrated { gap: 20px; }
     .services-grid { grid-template-columns: 1fr; gap: 15px; }
     .service-card { padding: 30px 20px; }
     .card-btn { padding: 6px 14px; font-size: 0.8rem; }

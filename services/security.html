@@ -16,60 +16,6 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="../assets/css/main.css">
     
-    <style>
-        /* Page Specific Overrides */
-        .service-hero {
-            padding: 120px 0 80px;
-            /* Using same gradient as main hero for consistency */
-            background: linear-gradient(180deg, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0.8) 100%);
-            color: var(--text-white);
-            text-align: center;
-        }
-        
-        .service-hero h1 {
-            color: white;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
-        }
-        
-        .service-hero p {
-            color: #cbd5e1;
-        }
-        
-        .feature-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin-top: 40px;
-        }
-
-        .feature-box {
-            background: var(--bg-surface);
-            padding: 30px;
-            border-radius: var(--radius-md);
-            border: 1px solid rgba(0,0,0,0.05);
-            transition: transform 0.3s ease;
-        }
-
-        .feature-box:hover {
-            transform: translateY(-5px);
-            border-color: var(--primary);
-        }
-
-        .feature-icon {
-            font-size: 2rem;
-            color: var(--accent);
-            margin-bottom: 20px;
-        }
-        
-        /* Fix for image sizing in split section */
-        .split-image-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow-lg);
-        }
-    </style>
 </head>
 <body>
 
@@ -221,7 +167,7 @@
     <section class="section" style="background: linear-gradient(rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.9)), url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop'); background-size: cover; background-position: center; color: var(--text-white); text-align: center;">
         <div class="container">
             <h2 style="margin-bottom: 15px; color: white;">Ready to secure your premises?</h2>
-            <p style="opacity: 0.9; margin-bottom: 30px; font-size: 1.1rem;">Get a tailored security proposal delivered to your inbox within 2 hours.</p>
+            <p style="color: #e2e8f0; margin-bottom: 30px; font-size: 1.1rem;">Get a tailored security proposal delivered to your inbox within 2 hours.</p>
             <div style="display: flex; gap: 15px; justify-content: center;">
                 <button onclick="modal.open('quote')" class="btn btn-primary">Get Custom Quote</button>
                 <a href="tel:08001234567" class="btn btn-outline">Call 0800 123 4567</a>
@@ -229,115 +175,8 @@
         </div>
     </section>
 
-    <!-- FOOTER -->
-    <footer>
-        <div class="container">
-            <div class="footer-grid">
-                <div>
-                    <a href="../index.html" class="footer-logo"><i class="fa-solid fa-cube text-accent"></i> UVALUE</a>
-                    <p style="margin-bottom: 25px; font-size: 0.95rem; line-height: 1.7;">The strategic facility management partner for UK enterprises.</p>
-                </div>
-                <div>
-                    <h5 style="color:white; margin-bottom:20px; font-weight:700;">Services</h5>
-                    <ul class="footer-links">
-                        <li><a href="security.html">Security</a></li>
-                        <li><a href="cleaning.html">Cleaning</a></li>
-                        <li><a href="catering.html">Catering</a></li>
-                        <li><a href="it.html">IT Procurement</a></li>
-                        <li><a href="laundry.html">Industrial Laundry</a></li>
-                        <li><a href="support.html">Wraparound Support</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h5 style="color:white; margin-bottom:20px; font-weight:700;">Contact</h5>
-                    <div class="footer-contact">
-                        <div><i class="fa-solid fa-phone"></i> 0800 123 4567</div>
-                        <div><i class="fa-solid fa-envelope"></i> hello@uvalue.co.uk</div>
-                    </div>
-                </div>
-            </div>
-            <div style="text-align:center; padding-top:30px; border-top:1px solid rgba(255,255,255,0.1)">
-                <p>&copy; 2025 Uvalue Facilities Ltd.</p>
-            </div>
-        </div>
-    </footer>
-
-    <!-- MODAL: REQUEST PROPOSAL -->
-    <div class="modal-overlay" id="quote-modal">
-        <div class="modal-content">
-            <i class="fa-solid fa-xmark close-modal" onclick="modal.close('quote')"></i>
-            <h3 style="margin-bottom: 12px;">Request Security Proposal</h3>
-            <p style="color: var(--text-light); margin-bottom: 25px;">Fill in the details below and our security team will contact you.</p>
-            <form onsubmit="event.preventDefault(); modal.submit('quote');">
-                <input type="text" class="form-input" placeholder="Name" required>
-                <input type="email" class="form-input" placeholder="Work Email" required>
-                <select class="form-select">
-                    <option>Manned Guarding</option>
-                    <option>CCTV Systems</option>
-                    <option>Mobile Patrols</option>
-                    <option>Full Security Audit</option>
-                </select>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Send Request</button>
-            </form>
-        </div>
-    </div>
 
     <!-- SCRIPTS -->
     <script src="../assets/js/main.js"></script>
-    <script>
-        // Modal Logic
-        const modal = {
-            open: function(type) {
-                document.getElementById(type + '-modal').classList.add('active');
-                document.body.style.overflow = 'hidden';
-            },
-            close: function(type) {
-                document.getElementById(type + '-modal').classList.remove('active');
-                document.body.style.overflow = 'auto';
-            },
-            submit: function(type) {
-                const el = document.getElementById(type + '-modal');
-                const btn = el.querySelector('button[type="submit"]');
-                const original = btn.innerText;
-                btn.innerText = "Request Sent!";
-                btn.style.background = "#10b981";
-                btn.disabled = true;
-                
-                setTimeout(() => {
-                    this.close(type);
-                    btn.innerText = original;
-                    btn.removeAttribute('style');
-                    btn.disabled = false;
-                    const form = el.querySelector('form');
-                    if (form) form.reset();
-                }, 2000);
-            }
-        };
-
-        // Close modal on escape key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                const activeModal = document.querySelector('.modal-overlay.active');
-                if (activeModal) modal.close(activeModal.id.replace('-modal', ''));
-            }
-        });
-
-        // Close modal on backdrop click
-        document.querySelectorAll('.modal-overlay').forEach(overlay => {
-            overlay.addEventListener('click', (e) => {
-                if (e.target === overlay) modal.close(overlay.id.replace('-modal', ''));
-            });
-        });
-
-        // Scroll to Top Monitor
-        window.addEventListener('scroll', () => {
-            const btn = document.getElementById('scrollTopBtn');
-            if (window.scrollY > 400) {
-                btn.classList.add('visible');
-            } else {
-                btn.classList.remove('visible');
-            }
-        });
-    </script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-// MODAL FUNCTIONALITY
+// MODAL FUNCTIONALITY - Consolidated for all pages
 const modal = {
     open: function(type) {
         document.getElementById(type + '-modal').classList.add('active');

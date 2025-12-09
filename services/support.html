@@ -16,60 +16,6 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="../assets/css/main.css">
     
-    <style>
-        /* Page Specific Overrides */
-        .service-hero {
-            padding: 120px 0 80px;
-            /* Using same gradient as main hero for consistency */
-            background: linear-gradient(180deg, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0.8) 100%);
-            color: var(--text-white);
-            text-align: center;
-        }
-        
-        .service-hero h1 {
-            color: white;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
-        }
-        
-        .service-hero p {
-            color: #cbd5e1;
-        }
-        
-        .feature-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin-top: 40px;
-        }
-
-        .feature-box {
-            background: var(--bg-surface);
-            padding: 30px;
-            border-radius: var(--radius-md);
-            border: 1px solid rgba(0,0,0,0.05);
-            transition: transform 0.3s ease;
-        }
-
-        .feature-box:hover {
-            transform: translateY(-5px);
-            border-color: var(--primary);
-        }
-
-        .feature-icon {
-            font-size: 2rem;
-            color: var(--accent);
-            margin-bottom: 20px;
-        }
-        
-        /* Fix for image sizing in split section */
-        .split-image-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow-lg);
-        }
-    </style>
 </head>
 <body>
 
@@ -220,7 +166,7 @@
     <section class="section" style="background: linear-gradient(rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.9)), url('https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=2072&auto=format&fit=crop'); background-size: cover; background-position: center; color: var(--text-white); text-align: center;">
         <div class="container">
             <h2 style="margin-bottom: 15px; color: white;">Ready to transform lives through support?</h2>
-            <p style="opacity: 0.9; margin-bottom: 30px; font-size: 1.1rem;">Get a tailored support proposal delivered to your inbox within 2 hours.</p>
+            <p style="color: #e2e8f0; margin-bottom: 30px; font-size: 1.1rem;">Get a tailored support proposal delivered to your inbox within 2 hours.</p>
             <div style="display: flex; gap: 15px; justify-content: center;">
                 <button onclick="modal.open('quote')" class="btn btn-primary">Get Custom Quote</button>
                 <a href="tel:08001234567" class="btn btn-outline">Call 0800 123 4567</a>
@@ -285,50 +231,6 @@
     <!-- SCRIPTS -->
     <script src="../assets/js/main.js"></script>
     <script>
-        // Modal Logic
-        const modal = {
-            open: function(type) {
-                document.getElementById(type + '-modal').classList.add('active');
-                document.body.style.overflow = 'hidden';
-            },
-            close: function(type) {
-                document.getElementById(type + '-modal').classList.remove('active');
-                document.body.style.overflow = 'auto';
-            },
-            submit: function(type) {
-                const el = document.getElementById(type + '-modal');
-                const btn = el.querySelector('button[type="submit"]');
-                const original = btn.innerText;
-                btn.innerText = "Request Sent!";
-                btn.style.background = "#10b981";
-                btn.disabled = true;
-                
-                setTimeout(() => {
-                    this.close(type);
-                    btn.innerText = original;
-                    btn.removeAttribute('style');
-                    btn.disabled = false;
-                    const form = el.querySelector('form');
-                    if (form) form.reset();
-                }, 2000);
-            }
-        };
-
-        // Close modal on escape key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                const activeModal = document.querySelector('.modal-overlay.active');
-                if (activeModal) modal.close(activeModal.id.replace('-modal', ''));
-            }
-        });
-
-        // Close modal on backdrop click
-        document.querySelectorAll('.modal-overlay').forEach(overlay => {
-            overlay.addEventListener('click', (e) => {
-                if (e.target === overlay) modal.close(overlay.id.replace('-modal', ''));
-            });
-        });
-
         // Scroll to Top Monitor
         window.addEventListener('scroll', () => {
             const btn = document.getElementById('scrollTopBtn');

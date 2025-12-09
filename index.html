@@ -54,8 +54,7 @@
 
     <!-- DYNAMIC VIEW CONTAINER -->
     <main id="app-root">
-        <div class="view-wrapper">
-            <section class="hero">
+        <section class="hero">
                 <div class="hero-content animate-entry">
                     <div class="hero-badge">
                         <i class="fa-solid fa-award"></i>
@@ -732,16 +731,6 @@
     <!-- SCRIPTS -->
     <script src="assets/js/main.js"></script>
     <script>
-        // Scroll to Top Monitor
-        window.addEventListener('scroll', () => {
-            const btn = document.getElementById('scrollTopBtn');
-            if (window.scrollY > 400) {
-                btn.classList.add('visible');
-            } else {
-                btn.classList.remove('visible');
-            }
-        });
-
         // Scroll to About section function
         function scrollToAbout() {
             const aboutSection = document.getElementById('about');
@@ -749,56 +738,6 @@
                 aboutSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         }
-
-        // Modal functionality
-        const modal = {
-            open: function(type) {
-                document.getElementById(type + '-modal').classList.add('active');
-                document.body.style.overflow = 'hidden';
-            },
-            close: function(type) {
-                document.getElementById(type + '-modal').classList.remove('active');
-                document.body.style.overflow = 'auto';
-            },
-            submit: function(type) {
-                const el = document.getElementById(type + '-modal');
-                const btn = el.querySelector('button[type="submit"]');
-                const original = btn.innerText;
-                btn.innerText = "Sent Successfully!";
-                btn.style.background = "#10b981";
-                btn.disabled = true;
-                
-                setTimeout(() => {
-                    this.close(type);
-                    btn.innerText = original;
-                    btn.removeAttribute('style');
-                    btn.disabled = false;
-                    const form = el.querySelector('form');
-                    if (form) form.reset();
-                }, 2000);
-            }
-        };
-
-        // Close modal on escape key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                const activeModal = document.querySelector('.modal-overlay.active');
-                if (activeModal) {
-                    const modalType = activeModal.id.replace('-modal', '');
-                    modal.close(modalType);
-                }
-            }
-        });
-
-        // Close modal on backdrop click
-        document.querySelectorAll('.modal-overlay').forEach(overlay => {
-            overlay.addEventListener('click', (e) => {
-                if (e.target === overlay) {
-                    const modalType = overlay.id.replace('-modal', '');
-                    modal.close(modalType);
-                }
-            });
-        });
     </script>
 </body>
 </html>
