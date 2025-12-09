@@ -2,12 +2,10 @@
 const modal = {
     open: function(type) {
         document.getElementById(type + '-modal').classList.add('active');
-        // Prevent body scroll when modal is open
         document.body.style.overflow = 'hidden';
     },
     close: function(type) {
         document.getElementById(type + '-modal').classList.remove('active');
-        // Restore body scroll
         document.body.style.overflow = 'auto';
     },
     submit: function(type) {
@@ -70,7 +68,6 @@ window.addEventListener('scroll', () => {
 
 // Enhanced scroll animations for service cards
 function initScrollAnimations() {
-    // Intersection Observer for service cards
     const observerOptions = {
         threshold: 0.1,
         rootMargin: '0px 0px -50px 0px'
@@ -85,7 +82,6 @@ function initScrollAnimations() {
         });
     }, observerOptions);
 
-    // Observe all service cards
     document.querySelectorAll('.service-card').forEach(card => {
         observer.observe(card);
     });
@@ -99,27 +95,17 @@ function initDropdownMenu() {
         const toggle = dropdown.querySelector('.dropdown-toggle');
         const menu = dropdown.querySelector('.dropdown-menu');
         
-        // For touch devices, add click event to toggle dropdown
         if ('ontouchstart' in window) {
             toggle.addEventListener('click', (e) => {
                 e.preventDefault();
-                
-                // Close other dropdowns
                 dropdowns.forEach(other => {
                     if (other !== dropdown) {
                         other.querySelector('.dropdown-menu').style.display = 'none';
                     }
                 });
-                
-                // Toggle current dropdown
-                if (menu.style.display === 'block') {
-                    menu.style.display = 'none';
-                } else {
-                    menu.style.display = 'block';
-                }
+                menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
             });
             
-            // Close dropdown when clicking outside
             document.addEventListener('click', (e) => {
                 if (!dropdown.contains(e.target)) {
                     menu.style.display = 'none';
@@ -129,215 +115,234 @@ function initDropdownMenu() {
     });
 }
 
-// INIT
-document.addEventListener('DOMContentLoaded', () => {
-    // Initialize scroll animations
-    initScrollAnimations();
-    // Initialize dropdown menu
-    initDropdownMenu();
-    // Initialize testimonials carousel
-    initTestimonialsCarousel();
-    // No router initialization needed - using standard page navigation
-});
 // =========================================
 // MODERN TESTIMONIALS GRID FUNCTIONALITY (REFACTORED)
 // =========================================
 
+// State Management
 const testimonialState = {
     filter: 'all',
-    itemsToShow: 3,     // Start with 3 items (1 featured + 2 regular)
-    increment: 3,       // How many to add when clicking "Load More"
-    cards: [],          // Will hold DOM elements
-    buttons: []         // Will hold Filter buttons
+    searchQuery: '',
+    expanded: false, // false = show initial limit, true = show all matching
+    initialLimit: 3  // Number of cards to show initially
 };
 
+let testimonialCards = [];
+let filterButtons = [];
+let loadMoreBtn = null;
+
+// Initialize testimonials grid
 function initTestimonialsGrid() {
-    testimonialState.cards = Array.from(document.querySelectorAll('.testimonial-card'));
-    testimonialState.buttons = document.querySelectorAll('.filter-btn');
+    testimonialCards = Array.from(document.querySelectorAll('.testimonial-card'));
+    filterButtons = document.querySelectorAll('.filter-btn');
+    loadMoreBtn = document.querySelector('.load-more-btn');
+    const searchInput = document.getElementById('testimonial-search');
     
-    if (testimonialState.cards.length === 0) return;
+    if (testimonialCards.length === 0) return;
 
-    // 1. Initialize Filter Buttons
-    testimonialState.buttons.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            // Update UI
-            testimonialState.buttons.forEach(b => b.classList.remove('active'));
-            e.currentTarget.classList.add('active');
-
-            // Update State
-            testimonialState.filter = e.currentTarget.getAttribute('data-filter');
-            testimonialState.itemsToShow = 3; // Reset limit when changing filter
+    // 1. Setup Filter Buttons
+    filterButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            // Update Active Class
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
             
-            // Render
-            renderTestimonials(true); // true = animate reset
+            // Update State
+            testimonialState.filter = button.getAttribute('data-filter');
+            // Optional: Reset expansion on filter change to keep list manageable
+            // testimonialState.expanded = false; 
+            
+            renderGrid();
         });
     });
 
-    // 2. Initialize Load More Button
-    const loadMoreBtn = document.querySelector('.load-more-btn');
-    if (loadMoreBtn) {
-        loadMoreBtn.addEventListener('click', () => {
-            loadMoreBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Loading...';
-            loadMoreBtn.disabled = true;
-
-            setTimeout(() => {
-                testimonialState.itemsToShow += testimonialState.increment;
-                renderTestimonials(false); // false = just append animation
-                loadMoreBtn.disabled = false;
-            }, 600); // Artificial delay for effect
+    // 2. Setup Search
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            testimonialState.searchQuery = e.target.value.toLowerCase();
+            renderGrid();
         });
     }
 
-    // 3. Initial Render
-    renderTestimonials(true);
-    initTestimonialSearch();
+    // 3. Setup Load More
+    if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', () => {
+            loadMoreBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Loading...';
+            
+            // Fake loading delay for UX
+            setTimeout(() => {
+                testimonialState.expanded = true;
+                renderGrid();
+            }, 500);
+        });
+    }
+
+    // 4. Setup Interactions (Tilt/Click)
+    addTestimonialInteractions();
+
+    // 5. Initial Render
+    renderGrid();
 }
 
 /**
- * The Core Logic: Decides what is shown/hidden based on state
- * @param {boolean} isHardReset - If true, triggers entrance animations for all items
+ * Core Render Function
+ * Decides which cards to show based on Filter, Search, and Limit
  */
-function renderTestimonials(isHardReset) {
+function renderGrid() {
     let visibleCount = 0;
-    let hiddenMatches = 0;
-
-    testimonialState.cards.forEach((card) => {
+    
+    // 1. Filter the list based on Category and Search
+    const matchingCards = testimonialCards.filter(card => {
         const category = card.getAttribute('data-category');
-        const isFeatured = card.classList.contains('featured');
+        const text = card.textContent.toLowerCase();
         
-        // 1. Check if card matches current filter
-        const matchesFilter = testimonialState.filter === 'all' || category === testimonialState.filter;
+        const matchesCategory = testimonialState.filter === 'all' || category === testimonialState.filter;
+        const matchesSearch = testimonialState.searchQuery === '' || text.includes(testimonialState.searchQuery);
+        
+        return matchesCategory && matchesSearch;
+    });
 
-        if (matchesFilter) {
-            // 2. Check if we are within the limit
-            if (visibleCount < testimonialState.itemsToShow) {
-                // SHOW CARD
-                const wasHidden = card.style.display === 'none' || card.classList.contains('hidden');
-                
-                card.classList.remove('hidden');
-                
-                // Restore specific display types
-                if (isFeatured) {
-                    card.style.display = 'grid';
-                    card.style.gridColumn = 'span 2';
-                } else {
-                    card.style.display = 'flex';
-                    card.style.flexDirection = 'column';
-                    card.style.gridColumn = ''; // Reset grid prop
-                }
-
-                // Animation Logic
-                if (wasHidden || isHardReset) {
-                    card.style.opacity = '0';
-                    card.style.transform = 'translateY(20px)';
-                    
-                    // Staggered animation based on position
-                    setTimeout(() => {
-                        card.style.transition = 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
-                        card.style.opacity = '1';
-                        card.style.transform = 'translateY(0)';
-                    }, visibleCount * 100); // Stagger delay
-                }
-
+    // 2. Apply Visibility Logic
+    testimonialCards.forEach(card => {
+        // If card is in the matching list
+        if (matchingCards.includes(card)) {
+            // Check if we should show it based on limits
+            const shouldShow = testimonialState.expanded || visibleCount < testimonialState.initialLimit;
+            
+            if (shouldShow) {
+                showCard(card, visibleCount); // Pass index for staggered animation
                 visibleCount++;
             } else {
-                // HIDE CARD (Exceeds limit)
                 hideCard(card);
-                hiddenMatches++;
             }
         } else {
-            // HIDE CARD (Does not match filter)
             hideCard(card);
         }
     });
 
-    updateLoadMoreButton(hiddenMatches);
-    addTestimonialInteractions(); // Re-bind hover effects
+    // 3. Update Load More Button Visibility
+    updateLoadMoreButton(matchingCards.length, visibleCount);
 }
 
-// Helper to hide card cleanly
+// Helper: Show a card with animation
+function showCard(card, index) {
+    if (card.style.display === 'none') {
+        // Restore layout
+        card.style.display = ''; // Clears inline display, falls back to CSS (flex/grid)
+        card.classList.remove('hidden');
+        
+        // Handle Featured layout specifically if needed
+        if (card.classList.contains('featured')) {
+            card.style.gridColumn = 'span 2'; // Ensure grid logic remains
+        } else {
+            card.style.gridColumn = '';
+        }
+
+        // Animation
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        
+        // Staggered delay based on index relative to current render batch
+        setTimeout(() => {
+            card.style.transition = 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 50);
+    }
+}
+
+// Helper: Hide a card
 function hideCard(card) {
-    card.classList.add('hidden');
-    card.style.display = 'none';
-    card.style.opacity = '0';
+    if (card.style.display !== 'none') {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+            // Only apply display:none if it hasn't been made visible again quickly
+            if (card.style.opacity === '0') {
+                card.style.display = 'none';
+                card.classList.add('hidden');
+            }
+        }, 300);
+    }
 }
 
-// Helper to update Load More Button State
-function updateLoadMoreButton(remainingCount) {
-    const loadMoreBtn = document.querySelector('.load-more-btn');
+// Helper: Update Button State
+function updateLoadMoreButton(totalMatching, currentlyVisible) {
     if (!loadMoreBtn) return;
 
-    if (remainingCount > 0) {
+    if (currentlyVisible < totalMatching) {
         loadMoreBtn.style.display = 'inline-flex';
-        loadMoreBtn.innerHTML = `<i class="fa-solid fa-plus"></i> Load More (${remainingCount})`;
+        loadMoreBtn.innerHTML = '<i class="fa-solid fa-plus"></i> Load More Testimonials';
+        loadMoreBtn.disabled = false;
     } else {
         loadMoreBtn.style.display = 'none';
     }
 }
 
-// Search Functionality (Integrated with State)
-function initTestimonialSearch() {
-    const searchInput = document.getElementById('testimonial-search');
-    if (!searchInput) return;
-
-    searchInput.addEventListener('input', (e) => {
-        const term = e.target.value.toLowerCase();
-        
-        if (term.length > 0) {
-            // Override standard filter logic for search
-            testimonialState.cards.forEach(card => {
-                const text = card.textContent.toLowerCase();
-                if (text.includes(term)) {
-                    card.classList.remove('hidden');
-                    card.style.display = card.classList.contains('featured') ? 'grid' : 'flex';
-                    setTimeout(() => { card.style.opacity = '1'; card.style.transform = 'translateY(0)'; }, 50);
-                } else {
-                    hideCard(card);
-                }
-            });
-            // Hide load more during search
-            const btn = document.querySelector('.load-more-btn');
-            if(btn) btn.style.display = 'none';
-        } else {
-            // Restore standard view
-            renderTestimonials(true);
-        }
-    });
-}
-
-// Tilt and Micro-interactions (Preserved from original)
+// Add interactive hover effects
 function addTestimonialInteractions() {
-    testimonialState.cards.forEach(card => {
-        // Remove old listeners to prevent stacking if function called multiple times
-        // (Note: In production, better to use named functions, but this simple overwrite works for this context)
-        card.onmousemove = (e) => {
-            if(card.style.display === 'none') return;
+    testimonialCards.forEach(card => {
+        // Tilt Effect
+        card.addEventListener('mousemove', (e) => {
             const rect = card.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
             const centerX = rect.width / 2;
             const centerY = rect.height / 2;
+            
             const isFeatured = card.classList.contains('featured');
             const tiltMultiplier = isFeatured ? 0.3 : 1;
+            
             const rotateX = (y - centerY) / 20 * tiltMultiplier;
             const rotateY = (centerX - x) / 20 * tiltMultiplier;
+            
             card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(10px)`;
-        };
+        });
         
-        card.onmouseleave = () => {
+        card.addEventListener('mouseleave', () => {
             card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateZ(0)';
-        };
-
+        });
+        
+        // Expand/Collapse Featured Card Text
         if (card.classList.contains('featured')) {
-            card.onclick = () => {
+            card.addEventListener('click', () => {
                 card.classList.toggle('expanded');
-                card.style.maxHeight = card.classList.contains('expanded') ? card.scrollHeight + 'px' : '';
-            };
+                if(card.classList.contains('expanded')) {
+                    card.style.maxHeight = card.scrollHeight + 'px';
+                } else {
+                    card.style.maxHeight = '';
+                }
+            });
         }
     });
 }
 
-// Init Wrapper
-function initTestimonialsCarousel() {
-    initTestimonialsGrid();
-}
+// Keyboard navigation for filters
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+        const activeBtn = document.querySelector('.filter-btn.active');
+        if (activeBtn) {
+            e.preventDefault();
+            const buttons = Array.from(filterButtons);
+            const currentIndex = buttons.indexOf(activeBtn);
+            let newIndex;
+            
+            if (e.key === 'ArrowLeft') {
+                newIndex = currentIndex > 0 ? currentIndex - 1 : buttons.length - 1;
+            } else {
+                newIndex = currentIndex < buttons.length - 1 ? currentIndex + 1 : 0;
+            }
+            
+            buttons[newIndex].click();
+            buttons[newIndex].focus();
+        }
+    }
+});
+
+// INIT
+document.addEventListener('DOMContentLoaded', () => {
+    initScrollAnimations();
+    initDropdownMenu();
+    initTestimonialsGrid(); // Single entry point for testimonials
+});
